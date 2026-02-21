@@ -107,8 +107,8 @@ export function LineChart({ data, labels, color = Colors.accent, height = 160 })
   return (
     <View style={{ height: height }}>
       {/* Y-labels */}
-      {gridY.map(g => (
-        <Text key={g.val} style={[styles.axisLabel, { position: 'absolute', left: 0, top: g.y - 6, width: 28, textAlign: 'right' }]}>
+      {gridY.map((g, i) => (
+        <Text key={`ylabel-${i}`} style={[styles.axisLabel, { position: 'absolute', left: 0, top: g.y - 6, width: 28, textAlign: 'right' }]}>
           {g.val}
         </Text>
       ))}
@@ -116,8 +116,8 @@ export function LineChart({ data, labels, color = Colors.accent, height = 160 })
       {/* Plot area */}
       <View style={{ position: 'absolute', left: 32, top: 0, width: PLOT_W, height: PLOT_H }}>
         {/* Grid lines */}
-        {gridY.map(g => (
-          <View key={'g' + g.val} style={[styles.gridLine, { top: g.y, width: PLOT_W }]} />
+        {gridY.map((g, i) => (
+          <View key={`grid-${i}`} style={[styles.gridLine, { top: g.y, width: PLOT_W }]} />
         ))}
 
         {/* Area fill */}
@@ -174,8 +174,8 @@ export function LineChart({ data, labels, color = Colors.accent, height = 160 })
       {/* X labels */}
       {labels && (
         <View style={{ position: 'absolute', bottom: 0, left: 32, width: PLOT_W, flexDirection: 'row', justifyContent: 'space-between' }}>
-          {labels.map(l => (
-            <Text key={l} style={styles.axisLabel}>{l}</Text>
+          {labels.map((l, i) => (
+            <Text key={`line-xlbl-${i}`} style={styles.axisLabel}>{l}</Text>
           ))}
         </View>
       )}
@@ -234,8 +234,8 @@ export function BarChart({ groups, colors, labels, height = 160 }) {
       {/* X labels + legend */}
       {labels && (
         <View style={{ flexDirection: 'row', paddingLeft: 28, marginTop: 6 }}>
-          {labels.map(l => (
-            <Text key={l} style={[styles.axisLabel, { flex: 1, textAlign: 'center' }]}>{l}</Text>
+          {labels.map((l, i) => (
+            <Text key={`bar-xlbl-${i}`} style={[styles.axisLabel, { flex: 1, textAlign: 'center' }]}>{l}</Text>
           ))}
         </View>
       )}

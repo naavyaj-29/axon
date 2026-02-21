@@ -2,9 +2,10 @@ import React, { useRef, useEffect } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity,
   RefreshControl, StyleSheet, Animated,
-  SafeAreaView, StatusBar, Dimensions,
+  StatusBar, Dimensions
 } from 'react-native';
-import { useStore } from '../../store/store';
+
+import { SafeAreaView } from 'react-native-safe-area-context';import { useStore } from '../../store/store';
 import { Colors, Spacing, Type, Shadow } from '../../theme/theme';
 import { Card, Pill } from '../../components/ui/UIComponents';
 import { LineChart, BarChart } from '../../components/charts/Charts';
