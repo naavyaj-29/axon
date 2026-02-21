@@ -5,7 +5,8 @@ import {
   StatusBar, Dimensions
 } from 'react-native';
 
-import { SafeAreaView } from 'react-native-safe-area-context';import { useStore } from '../../store/store';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useStore } from '../../store/store';
 import { Colors, Spacing, Type, Shadow } from '../../theme/theme';
 import { Card, Pill } from '../../components/ui/UIComponents';
 import { LineChart, BarChart } from '../../components/charts/Charts';
@@ -13,7 +14,7 @@ import { LineChart, BarChart } from '../../components/charts/Charts';
 const W = Dimensions.get('window').width;
 
 // ─── Metric Card ──────────────────────────────────────────────────────────────
-function MetricCard({ metric, color, softColor, icon, delay }) {
+function MetricCard({ metric, color, softColor, icon, delay }: any) {
   const fade = useRef(new Animated.Value(0)).current;
   const slide = useRef(new Animated.Value(16)).current;
 
@@ -57,7 +58,7 @@ function MetricCard({ metric, color, softColor, icon, delay }) {
 }
 
 // ─── Signal Row ───────────────────────────────────────────────────────────────
-function SignalRow({ label, value, color, softColor, index }) {
+function SignalRow({ label, value, color, softColor, index }: any) {
   const fade  = useRef(new Animated.Value(0)).current;
   const slide = useRef(new Animated.Value(20)).current;
 
@@ -85,7 +86,7 @@ function SignalRow({ label, value, color, softColor, index }) {
 }
 
 // ─── Dashboard Screen ─────────────────────────────────────────────────────────
-export default function DashboardScreen({ navigation }) {
+export default function DashboardScreen({ navigation }: any) {
   const { state, actions } = useStore();
   const { dashboard, charts, insight } = state;
 
@@ -109,7 +110,7 @@ export default function DashboardScreen({ navigation }) {
     { label: 'Stress Load Trend',       value: dashboard.stressLoad.trend,        color: Colors.signalAmber, soft: Colors.signalAmberSoft },
   ];
 
-  const barGroups = charts.days.slice(-5).map((_, i) => ({
+  const barGroups = charts.days.slice(-5).map((_: any, i: number) => ({
     a: charts.recoveryWeek[i + 2],
     b: charts.stressWeek[i + 2],
   }));
@@ -206,7 +207,7 @@ export default function DashboardScreen({ navigation }) {
           <BarChart
             groups={barGroups}
             colors={[Colors.signalGreen, Colors.signalRed]}
-            labels={charts.days.slice(-5).map(d => d.slice(0, 1))}
+            labels={charts.days.slice(-5).map((d: any) => d.slice(0, 1))}
             height={160}
           />
           {/* Legend */}

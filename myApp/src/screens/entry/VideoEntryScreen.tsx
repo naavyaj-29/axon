@@ -7,36 +7,20 @@ import { useStore } from '../../store/store';
 import { Colors, Spacing, Type, Shadow } from '../../theme/theme';
 import { PrimaryButton } from '../../components/ui/UIComponents';
 
-/**
- * VideoEntryScreen
- *
- * Camera library options (choose one and un-comment the relevant sections):
- *
- * Option A — react-native-vision-camera (recommended for bare RN):
- *   npm install react-native-vision-camera
- *
- * Option B — expo-camera (if using Expo):
- *   expo install expo-camera
- *
- * The full UI, timer, and state logic are complete below.
- * Only the actual camera preview + start/stop calls need wiring.
- */
-
-export default function VideoEntryScreen({ navigation }) {
+export default function VideoEntryScreen({ navigation }: any) {
   const { actions } = useStore();
   const [isRecording, setIsRecording]   = useState(false);
   const [recorded, setRecorded]         = useState(false);
   const [seconds, setSeconds]           = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const timerRef  = useRef(null);
+  const timerRef  = useRef<any>(null);
   const dotAnim   = useRef(new Animated.Value(1)).current;
-  const dotLoop   = useRef(null);
-  // const cameraRef = useRef(null);  // ← un-comment when using vision-camera or expo-camera
+  const dotLoop   = useRef<any>(null);
 
   useEffect(() => {
     return () => {
-      clearInterval(timerRef.current);
+      if (timerRef.current) clearInterval(timerRef.current);
       dotLoop.current?.stop();
     };
   }, []);
@@ -57,8 +41,8 @@ export default function VideoEntryScreen({ navigation }) {
     dotLoop.current.start();
   };
 
-  const stopRecordingUI = (path) => {
-    clearInterval(timerRef.current);
+  const stopRecordingUI = (path: any) => {
+    if (timerRef.current) clearInterval(timerRef.current);
     dotLoop.current?.stop();
     dotAnim.setValue(1);
     setIsRecording(false);
@@ -68,26 +52,8 @@ export default function VideoEntryScreen({ navigation }) {
 
   const handleToggleRecord = async () => {
     if (isRecording) {
-      // TODO (vision-camera):
-      //   await cameraRef.current?.stopRecording();
-      //   stopRecordingUI is called inside onRecordingFinished callback
-
-      // TODO (expo-camera):
-      //   const { uri } = await cameraRef.current?.stopRecording();
-      //   stopRecordingUI(uri);
-
-      // Placeholder:
       stopRecordingUI('/mock/video.mp4');
     } else {
-      // TODO (vision-camera):
-      //   cameraRef.current?.startRecording({
-      //     onRecordingFinished: (video) => stopRecordingUI(video.path),
-      //     onRecordingError:    (e)     => console.error(e),
-      //   });
-
-      // TODO (expo-camera):
-      //   await cameraRef.current?.startRecording({ maxDuration: 120 });
-
       startRecordingUI();
     }
   };
@@ -106,7 +72,7 @@ export default function VideoEntryScreen({ navigation }) {
     navigation.replace('Analyzing');
   };
 
-  const formatTime = (s) => {
+  const formatTime = (s: number) => {
     const m = Math.floor(s / 60).toString().padStart(2, '0');
     const ss = (s % 60).toString().padStart(2, '0');
     return `${m}:${ss}`;
@@ -116,21 +82,6 @@ export default function VideoEntryScreen({ navigation }) {
     <View style={styles.root}>
       <StatusBar barStyle="light-content" backgroundColor="#000" />
 
-      {/* ── Camera Preview ─────────────────────────────────────────────────── */}
-      {/*
-        Option A (vision-camera):
-          import { Camera, useCameraDevice } from 'react-native-vision-camera';
-          const device = useCameraDevice('front');
-          <Camera ref={cameraRef} style={StyleSheet.absoluteFill}
-                  device={device} isActive video audio />
-
-        Option B (expo-camera):
-          import { CameraView } from 'expo-camera';
-          <CameraView ref={cameraRef} style={StyleSheet.absoluteFill}
-                      facing="front" mode="video" />
-
-        Replace the placeholder below with the actual camera component.
-      */}
       <View style={styles.cameraPlaceholder}>
         <Text style={styles.placeholderEmoji}>📷</Text>
         <Text style={styles.placeholderText}>
@@ -139,8 +90,6 @@ export default function VideoEntryScreen({ navigation }) {
           react-native-vision-camera or expo-camera
         </Text>
       </View>
-
-      {/* ── Overlay UI ─────────────────────────────────────────────────────── */}
 
       {/* Top row: close + timer */}
       <View style={[styles.topRow, { paddingTop: Platform.OS === 'ios' ? 54 : 24 }]}>
@@ -160,7 +109,6 @@ export default function VideoEntryScreen({ navigation }) {
       <View style={[styles.bottomRow, { paddingBottom: Platform.OS === 'ios' ? 48 : 24 }]}>
 
         {recorded ? (
-          /* Post-recording state */
           <View style={styles.postRecordControls}>
             <TouchableOpacity style={styles.discardBtn} onPress={handleDiscard}>
               <Text style={styles.discardText}>↺  Re-record</Text>
@@ -174,7 +122,6 @@ export default function VideoEntryScreen({ navigation }) {
             />
           </View>
         ) : (
-          /* Record button */
           <View style={styles.recordControls}>
             <TouchableOpacity
               style={[styles.recordBtn, isRecording && styles.recordBtnActive]}

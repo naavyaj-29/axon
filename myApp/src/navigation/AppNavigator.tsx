@@ -11,7 +11,18 @@ import AudioEntryScreen  from '../screens/entry/AudioEntryScreen';
 import VideoEntryScreen  from '../screens/entry/VideoEntryScreen';
 import AnalyzingScreen   from '../screens/entry/AnalyzingScreen';
 
-const Stack = createNativeStackNavigator();
+// 1. Define the parameters for your stack
+export type RootStackParamList = {
+  Dashboard: undefined;
+  EntryHub: undefined;
+  TextEntry: undefined;
+  AudioEntry: undefined;
+  VideoEntry: undefined;
+  Analyzing: undefined;
+};
+
+// 2. Pass the param list to the Stack creator
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function AppNavigator() {
   return (

@@ -1,8 +1,9 @@
 import React, { useRef, useEffect } from 'react';
 import {
   View, Text, TouchableOpacity, StyleSheet,
-  SafeAreaView, StatusBar, Animated,
+  StatusBar, Animated,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useStore } from '../../store/store';
 import { Colors, Spacing, Type, Shadow } from '../../theme/theme';
 import { BackHeader } from '../../components/ui/UIComponents';
@@ -40,7 +41,7 @@ const MODES = [
   },
 ];
 
-export default function EntryHubScreen({ navigation }) {
+export default function EntryHubScreen({ navigation }: any) {
   const { actions } = useStore();
   const containerFade = useRef(new Animated.Value(0)).current;
   const cardAnims = useRef(MODES.map(() => ({
@@ -58,7 +59,7 @@ export default function EntryHubScreen({ navigation }) {
     )).start();
   }, []);
 
-  const handleSelect = (mode) => {
+  const handleSelect = (mode: any) => {
     actions.setEntryType(mode.key);
     navigation.push(mode.screen);
   };

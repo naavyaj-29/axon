@@ -7,14 +7,9 @@ import { useStore } from '../../store/store';
 import { Colors, Spacing, Type, Shadow } from '../../theme/theme';
 import { BackHeader, PrimaryButton } from '../../components/ui/UIComponents';
 
-// NOTE: Real recording requires react-native-audio-recorder-player or expo-av.
-// Install: npm install react-native-audio-recorder-player
-// OR (Expo): expo install expo-av
-// Wire the TODO comments below to start/stop recording with that library.
-
 const NUM_BARS = 28;
 
-export default function AudioEntryScreen({ navigation }) {
+export default function AudioEntryScreen({ navigation }: any) {
   const { actions } = useStore();
   const [isRecording, setIsRecording] = useState(false);
   const [isPaused, setIsPaused]       = useState(false);
@@ -22,11 +17,11 @@ export default function AudioEntryScreen({ navigation }) {
   const [seconds, setSeconds]         = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const timerRef    = useRef(null);
+  const timerRef    = useRef<any>(null);
   const pulseAnim   = useRef(new Animated.Value(1)).current;
-  const pulseLoop   = useRef(null);
+  const pulseLoop   = useRef<any>(null);
   const barAnims    = useRef(Array.from({ length: NUM_BARS }, () => new Animated.Value(0.15))).current;
-  const barLoops    = useRef([]);
+  const barLoops    = useRef<any[]>([]);
   const fadeIn      = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -37,7 +32,7 @@ export default function AudioEntryScreen({ navigation }) {
   const stopAllAnimations = () => {
     pulseLoop.current?.stop();
     barLoops.current.forEach(l => l?.stop());
-    clearInterval(timerRef.current);
+    if (timerRef.current) clearInterval(timerRef.current);
   };
 
   const startWaveform = () => {
@@ -56,7 +51,6 @@ export default function AudioEntryScreen({ navigation }) {
           }),
         ])
       );
-      // stagger start
       setTimeout(() => loop.start(), i * 12);
       return loop;
     });
@@ -84,21 +78,18 @@ export default function AudioEntryScreen({ navigation }) {
     setIsPaused(false);
     setRecorded(false);
     setSeconds(0);
-    // TODO: await audioRecorder.startRecording();
     timerRef.current = setInterval(() => setSeconds(s => s + 1), 1000);
     startMicPulse();
     startWaveform();
   };
 
   const handleStopRecording = () => {
-    clearInterval(timerRef.current);
+    if (timerRef.current) clearInterval(timerRef.current);
     stopAllAnimations();
     pulseAnim.setValue(1);
     setIsRecording(false);
     setIsPaused(false);
     setRecorded(true);
-    // TODO: const path = await audioRecorder.stopRecording();
-    // actions.setEntryAudio(path);
     actions.setEntryAudio('/mock/audio.m4a');
   };
 
@@ -116,7 +107,7 @@ export default function AudioEntryScreen({ navigation }) {
     navigation.replace('Analyzing');
   };
 
-  const formatTime = (s) => {
+  const formatTime = (s: number) => {
     const m = Math.floor(s / 60).toString().padStart(2, '0');
     const ss = (s % 60).toString().padStart(2, '0');
     return `${m}:${ss}`;
@@ -142,7 +133,7 @@ export default function AudioEntryScreen({ navigation }) {
         {/* Waveform visualiser */}
         <View style={styles.waveform}>
           {barAnims.map((anim, i) => {
-            const maxH = 16 + ((i % 5) * 10);  // vary max heights for organic look
+            const maxH = 16 + ((i % 5) * 10);
             return (
               <Animated.View
                 key={i}
@@ -172,7 +163,6 @@ export default function AudioEntryScreen({ navigation }) {
             </TouchableOpacity>
           </Animated.View>
         ) : (
-          /* Post-record actions */
           <View style={styles.postRecord}>
             <TouchableOpacity onPress={handleDiscard} style={styles.discardBtn}>
               <Text style={styles.discardText}>↺  Re-record</Text>

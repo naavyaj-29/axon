@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  View, Text, StyleSheet, Animated,
-  SafeAreaView, StatusBar,
+  View, Text, StyleSheet, Animated, StatusBar,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useStore } from '../../store/store';
 import { Colors, Spacing, Type } from '../../theme/theme';
 
 const STEPS = [
-  { icon: '🔍', label: 'Reading your entry…',             duration: 800  },
+  { icon: '🔍', label: 'Reading your entry…',          duration: 800  },
   { icon: '🧠', label: 'Mapping cognitive patterns…',     duration: 900  },
   { icon: '💭', label: 'Measuring emotional signals…',    duration: 850  },
   { icon: '📊', label: 'Calculating stress load…',        duration: 750  },
@@ -15,7 +15,7 @@ const STEPS = [
   { icon: '✨', label: 'Generating your insights…',       duration: 600  },
 ];
 
-function StepItem({ step, isActive, isDone, index }) {
+function StepItem({ step, isActive, isDone, index }: any) {
   const fade  = useRef(new Animated.Value(0)).current;
   const slide = useRef(new Animated.Value(12)).current;
 
@@ -42,14 +42,14 @@ function StepItem({ step, isActive, isDone, index }) {
   );
 }
 
-export default function AnalyzingScreen({ navigation }) {
+export default function AnalyzingScreen({ navigation }: any) {
   const { state } = useStore();
   const [currentStep, setCurrentStep] = useState(0);
-  const [doneSteps, setDoneSteps]     = useState([]);
+  const [doneSteps, setDoneSteps]     = useState<number[]>([]);
   const [complete, setComplete]       = useState(false);
 
   const ringAnim    = useRef(new Animated.Value(0)).current;
-  const ringLoop    = useRef(null);
+  const ringLoop    = useRef<any>(null);
   const completeFade = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -61,7 +61,7 @@ export default function AnalyzingScreen({ navigation }) {
 
     // Walk through steps
     let stepIndex = 0;
-    let elapsed   = 0;
+    let timeoutId: any;
 
     const runStep = () => {
       if (stepIndex >= STEPS.length) {
@@ -69,13 +69,13 @@ export default function AnalyzingScreen({ navigation }) {
         setComplete(true);
         Animated.timing(completeFade, { toValue: 1, duration: 500, useNativeDriver: true }).start();
         // Navigate to dashboard after a beat
-        setTimeout(() => navigation.replace('Dashboard'), 1200);
+        timeoutId = setTimeout(() => navigation.replace('Dashboard'), 1200);
         return;
       }
 
       setCurrentStep(stepIndex);
       const dur = STEPS[stepIndex].duration;
-      setTimeout(() => {
+      timeoutId = setTimeout(() => {
         setDoneSteps(prev => [...prev, stepIndex]);
         stepIndex++;
         runStep();
@@ -83,7 +83,11 @@ export default function AnalyzingScreen({ navigation }) {
     };
 
     runStep();
-    return () => ringLoop.current?.stop();
+
+    return () => {
+      ringLoop.current?.stop();
+      if (timeoutId) clearTimeout(timeoutId);
+    };
   }, []);
 
   const spin = ringAnim.interpolate({ inputRange: [0, 1], outputRange: ['0deg', '360deg'] });

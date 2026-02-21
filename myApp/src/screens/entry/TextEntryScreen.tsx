@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
   View, Text, TextInput, TouchableOpacity, ScrollView,
-  StyleSheet, SafeAreaView, StatusBar, Animated,
+  StyleSheet, StatusBar, Animated,
   Keyboard, KeyboardAvoidingView, Platform,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useStore } from '../../store/store';
 import { Colors, Spacing, Type } from '../../theme/theme';
 import { BackHeader, PrimaryButton } from '../../components/ui/UIComponents';
@@ -16,13 +17,13 @@ const PROMPTS = [
   'Anything you\'ve been avoiding thinking about?',
 ];
 
-export default function TextEntryScreen({ navigation }) {
+export default function TextEntryScreen({ navigation }: any) {
   const { actions } = useStore();
   const [text, setText] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [promptIndex] = useState(() => Math.floor(Math.random() * PROMPTS.length));
-  const inputRef = useRef(null);
+  const inputRef = useRef<any>(null);
   const fade = useRef(new Animated.Value(0)).current;
   const charCount = text.trim().length;
   const hasContent = charCount > 10;

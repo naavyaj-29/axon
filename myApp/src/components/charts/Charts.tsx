@@ -5,14 +5,21 @@ import { Colors, Spacing, Type } from '../../theme/theme';
 const SCREEN_W = Dimensions.get('window').width;
 
 // ─── Sparkline (mini inline line chart) ──────────────────────────────────────
-export function Sparkline({ data, color = Colors.accent, height = 40, width }) {
+interface SparklineProps {
+  data: number[];
+  color?: string;
+  height?: number;
+  width?: number;
+}
+
+export function Sparkline({ data, color = Colors.accent, height = 40, width }: SparklineProps) {
   const W = width || SCREEN_W - Spacing.screenH * 2 - Spacing.md * 2 - 8;
   const max = Math.max(...data);
   const min = Math.min(...data);
   const range = max - min || 1;
   const PAD = 4;
 
-  const pts = data.map((v, i) => ({
+  const pts = data.map((v: number, i: number) => ({
     x: (i / (data.length - 1)) * (W - PAD * 2) + PAD,
     y: (height - PAD * 2) - ((v - min) / range) * (height - PAD * 2) + PAD,
   }));
@@ -20,7 +27,7 @@ export function Sparkline({ data, color = Colors.accent, height = 40, width }) {
   return (
     <View style={{ width: W, height, position: 'relative' }}>
       {/* Area fill */}
-      {pts.map((pt, i) => {
+      {pts.map((pt: { x: number, y: number }, i: number) => {
         const colW = i < pts.length - 1 ? pts[i + 1].x - pt.x + 1 : W - pt.x;
         return (
           <View
@@ -38,7 +45,7 @@ export function Sparkline({ data, color = Colors.accent, height = 40, width }) {
       })}
 
       {/* Line segments */}
-      {pts.slice(0, -1).map((pt, i) => {
+      {pts.slice(0, -1).map((pt: { x: number, y: number }, i: number) => {
         const next = pts[i + 1];
         const dx = next.x - pt.x;
         const dy = next.y - pt.y;
@@ -85,7 +92,14 @@ export function Sparkline({ data, color = Colors.accent, height = 40, width }) {
 }
 
 // ─── Full Line Chart with axes ─────────────────────────────────────────────────
-export function LineChart({ data, labels, color = Colors.accent, height = 160 }) {
+interface LineChartProps {
+  data: number[];
+  labels?: string[];
+  color?: string;
+  height?: number;
+}
+
+export function LineChart({ data, labels, color = Colors.accent, height = 160 }: LineChartProps) {
   const W = SCREEN_W - Spacing.screenH * 2 - Spacing.md * 2;
   const PLOT_W = W - 32; // room for y labels
   const PLOT_H = height - 24; // room for x labels
@@ -94,7 +108,7 @@ export function LineChart({ data, labels, color = Colors.accent, height = 160 })
   const range = max - min || 1;
   const PAD = 6;
 
-  const pts = data.map((v, i) => ({
+  const pts = data.map((v: number, i: number) => ({
     x: (i / (data.length - 1)) * (PLOT_W - PAD * 2) + PAD,
     y: (PLOT_H - PAD * 2) - ((v - min) / range) * (PLOT_H - PAD * 2) + PAD,
   }));
@@ -107,7 +121,7 @@ export function LineChart({ data, labels, color = Colors.accent, height = 160 })
   return (
     <View style={{ height: height }}>
       {/* Y-labels */}
-      {gridY.map((g, i) => (
+      {gridY.map((g: { y: number, val: number }, i: number) => (
         <Text key={`ylabel-${i}`} style={[styles.axisLabel, { position: 'absolute', left: 0, top: g.y - 6, width: 28, textAlign: 'right' }]}>
           {g.val}
         </Text>
@@ -116,12 +130,12 @@ export function LineChart({ data, labels, color = Colors.accent, height = 160 })
       {/* Plot area */}
       <View style={{ position: 'absolute', left: 32, top: 0, width: PLOT_W, height: PLOT_H }}>
         {/* Grid lines */}
-        {gridY.map((g, i) => (
+        {gridY.map((g: { y: number, val: number }, i: number) => (
           <View key={`grid-${i}`} style={[styles.gridLine, { top: g.y, width: PLOT_W }]} />
         ))}
 
         {/* Area fill */}
-        {pts.map((pt, i) => {
+        {pts.map((pt: { x: number, y: number }, i: number) => {
           const colW = i < pts.length - 1 ? pts[i + 1].x - pt.x + 1 : PLOT_W - pt.x;
           return (
             <View
@@ -139,7 +153,7 @@ export function LineChart({ data, labels, color = Colors.accent, height = 160 })
         })}
 
         {/* Line segments */}
-        {pts.slice(0, -1).map((pt, i) => {
+        {pts.slice(0, -1).map((pt: { x: number, y: number }, i: number) => {
           const next = pts[i + 1];
           const dx = next.x - pt.x;
           const dy = next.y - pt.y;
@@ -166,7 +180,7 @@ export function LineChart({ data, labels, color = Colors.accent, height = 160 })
         })}
 
         {/* Dots */}
-        {pts.map((pt, i) => (
+        {pts.map((pt: { x: number, y: number }, i: number) => (
           <View key={'dot' + i} style={[styles.dot, { left: pt.x - 4, top: pt.y - 4, borderColor: color, backgroundColor: color }]} />
         ))}
       </View>
@@ -174,7 +188,7 @@ export function LineChart({ data, labels, color = Colors.accent, height = 160 })
       {/* X labels */}
       {labels && (
         <View style={{ position: 'absolute', bottom: 0, left: 32, width: PLOT_W, flexDirection: 'row', justifyContent: 'space-between' }}>
-          {labels.map((l, i) => (
+          {labels.map((l: string, i: number) => (
             <Text key={`line-xlbl-${i}`} style={styles.axisLabel}>{l}</Text>
           ))}
         </View>
@@ -184,9 +198,14 @@ export function LineChart({ data, labels, color = Colors.accent, height = 160 })
 }
 
 // ─── Grouped Bar Chart ─────────────────────────────────────────────────────────
-export function BarChart({ groups, colors, labels, height = 160 }) {
-  // groups: [{ a: 65, b: 35 }, ...]
-  // colors: ['#50CBA0', '#F07272']
+interface BarChartProps {
+  groups: Record<string, number>[];
+  colors: string[];
+  labels?: string[];
+  height?: number;
+}
+
+export function BarChart({ groups, colors, labels, height = 160 }: BarChartProps) {
   const maxVal = 100;
   const PLOT_H = height - 24;
 
@@ -210,11 +229,11 @@ export function BarChart({ groups, colors, labels, height = 160 }) {
             }]} />
           ))}
 
-          {groups.map((group, gi) => {
-            const vals = Object.values(group);
+          {groups.map((group: Record<string, number>, gi: number) => {
+            const vals = Object.values(group) as number[];
             return (
               <View key={gi} style={{ flex: 1, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'center', gap: 4 }}>
-                {vals.map((v, vi) => (
+                {vals.map((v: number, vi: number) => (
                   <View
                     key={vi}
                     style={{
@@ -234,7 +253,7 @@ export function BarChart({ groups, colors, labels, height = 160 }) {
       {/* X labels + legend */}
       {labels && (
         <View style={{ flexDirection: 'row', paddingLeft: 28, marginTop: 6 }}>
-          {labels.map((l, i) => (
+          {labels.map((l: string, i: number) => (
             <Text key={`bar-xlbl-${i}`} style={[styles.axisLabel, { flex: 1, textAlign: 'center' }]}>{l}</Text>
           ))}
         </View>
