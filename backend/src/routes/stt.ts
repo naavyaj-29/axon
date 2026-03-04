@@ -5,6 +5,7 @@ import { z } from "zod";
 import { requireUser } from "../middleware/auth.js";
 import { transcribeAudio } from "../services/openai.js";
 import { supabaseAdmin } from "../services/supabase.js";
+import { analyzeText } from "../services/bert.js";
 
 const upload = multer({ dest: "tmp/" });
 export const sttRouter = Router();
@@ -29,7 +30,13 @@ sttRouter.post(
       }
 
       const transcript = await transcribeAudio(req.file.path);
+      let bertResult = null;
 
+      try {
+        bertResult = await analyzeText(transcript);
+      } catch (e) {
+        console.error("BERT failed", e);
+      }
       // Clean up temp file
       await fs.unlink(req.file.path).catch(() => {});
 
@@ -48,7 +55,10 @@ sttRouter.post(
         }
       }
 
-      return res.json({ transcript });
+      return res.json({
+        transcript,
+        bert: bertResult,
+      });
     } catch (e: any) {
       // Attempt cleanup if file still exists
       if (req.file?.path) {
